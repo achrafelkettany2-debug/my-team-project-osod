@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.myexperiment.mapper.CourseMapper">
+    
+    <select id="findAllCourses" resultType="com.myexperiment.entity.Course">
+        SELECT id, course_name as courseName, teacher_name as teacherName, description 
+        FROM courses
+    </select>
+
+    <insert id="addCourse" parameterType="com.myexperiment.entity.Course">
+        INSERT INTO courses (course_name, teacher_name, description)
+        VALUES (#{courseName}, #{teacherName}, #{description})
+    </insert>
+
+</mapper>
