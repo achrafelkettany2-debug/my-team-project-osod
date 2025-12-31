@@ -5,6 +5,8 @@ import com.myexperiment.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
+import java.util.Collections;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -20,10 +22,17 @@ public class CourseController {
         return courseService.getAllCourses();
     }
 
-    // API to add a new course
+    // API to add a new course - NOW RETURNS JSON!
     @PostMapping
-    public String addCourse(@RequestBody Course course) {
+    public Map<String, String> addCourse(@RequestBody Course course) {
         courseService.addCourse(course);
-        return "Course added successfully!";
+        // This creates a proper JSON response: { "status": "success" }
+        return Collections.singletonMap("status", "success");
     }
+    // API to delete a course
+@DeleteMapping("/{id}")
+public Map<String, String> deleteCourse(@PathVariable Integer id) {
+    courseService.deleteCourse(id);
+    return Collections.singletonMap("status", "deleted");
+}
 }

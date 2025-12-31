@@ -19,4 +19,7 @@ public class CourseService {
     public void addCourse(Course course) {
         courseMapper.addCourse(course);
     }
+    public void deleteCourse(Integer id) {
+    courseMapper.deleteCourse(id);
+    }
 }

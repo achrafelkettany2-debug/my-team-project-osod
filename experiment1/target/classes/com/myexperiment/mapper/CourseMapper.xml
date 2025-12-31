@@ -14,5 +14,8 @@
         INSERT INTO courses (course_name, teacher_name, description)
         VALUES (#{courseName}, #{teacherName}, #{description})
     </insert>
+<delete id="deleteCourse" parameterType="int">
+    DELETE FROM courses WHERE id = #{id}
+</delete>
 
 </mapper>
