@@ -1,0 +1,2 @@
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:18:22:26 +0800] "GET /experiment1/users HTTP/1.1" 200 93 http-bio-8080-exec-2 989
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:18:22:26 +0800] "GET /experiment1/courses HTTP/1.1" 200 524 http-bio-8080-exec-1 989

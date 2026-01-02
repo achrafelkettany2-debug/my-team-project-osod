@@ -19,5 +19,13 @@
         INSERT INTO users (username, password, email)
         VALUES (#{username}, #{password}, #{email})
     </insert>
+<select id="login" resultType="com.myexperiment.entity.User">
+        SELECT * FROM users 
+        WHERE username = #{param1} AND password = #{param2}
+    </select>
 
+    <insert id="register" parameterType="com.myexperiment.entity.User">
+        INSERT INTO users (username, password, email, role)
+        VALUES (#{username}, #{password}, #{email}, #{role})
+    </insert>
 </mapper>
