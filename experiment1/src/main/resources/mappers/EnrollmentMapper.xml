@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.myexperiment.mapper.EnrollmentMapper">
+
+    <insert id="insertEnrollment" parameterType="com.myexperiment.entity.Enrollment">
+        INSERT INTO enrollments (user_id, course_id)
+        VALUES (#{userId}, #{courseId})
+    </insert>
+
+    <select id="checkEnrollment" resultType="int">
+        SELECT count(*) FROM enrollments 
+        WHERE user_id = #{userId} AND course_id = #{courseId}
+    </select>
+
+    <select id="getStudentEnrollments" resultType="com.myexperiment.entity.Enrollment">
+        SELECT 
+            e.id, 
+            e.user_id as userId, 
+            e.course_id as courseId, 
+            e.enrolled_at as enrolledAt,
+            c.course_name as courseName
+        FROM enrollments e
+        JOIN courses c ON e.course_id = c.id
+        WHERE e.user_id = #{userId}
+    </select>
+
+</mapper>
