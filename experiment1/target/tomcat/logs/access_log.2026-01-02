@@ -1,2 +1,10 @@
 0:0:0:0:0:0:0:1 - - [02/Jan/2026:18:22:26 +0800] "GET /experiment1/users HTTP/1.1" 200 93 http-bio-8080-exec-2 989
 0:0:0:0:0:0:0:1 - - [02/Jan/2026:18:22:26 +0800] "GET /experiment1/courses HTTP/1.1" 200 524 http-bio-8080-exec-1 989
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:19:41:32 +0800] "POST /experiment1/users/login HTTP/1.1" 200 28 http-bio-8080-exec-1 519
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:19:41:44 +0800] "POST /experiment1/users/login HTTP/1.1" 200 84 http-bio-8080-exec-2 10
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:19:41:44 +0800] "GET /experiment1/courses HTTP/1.1" 200 524 http-bio-8080-exec-3 15
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:19:42:43 +0800] "OPTIONS /experiment1/users/register HTTP/1.1" 200 - http-bio-8080-exec-4 4
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:19:42:44 +0800] "POST /experiment1/users/register HTTP/1.1" 200 31 http-bio-8080-exec-5 24
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:19:42:50 +0800] "POST /experiment1/users/login HTTP/1.1" 200 74 http-bio-8080-exec-6 7
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:19:42:50 +0800] "GET /experiment1/courses HTTP/1.1" 200 524 http-bio-8080-exec-7 8
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:19:42:50 +0800] "GET /experiment1/users HTTP/1.1" 200 201 http-bio-8080-exec-8 9

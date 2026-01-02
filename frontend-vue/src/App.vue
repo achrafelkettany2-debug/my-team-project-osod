@@ -4,17 +4,17 @@ import UserList from './components/UserList.vue'
 import CourseList from './components/CourseList.vue'
 import Login from './components/Login.vue'
 
-// State: Are we logged in? (Starts false)
+// State
 const isLoggedIn = ref(false)
 const currentUser = ref(null)
 
-// Function to handle when Login.vue says "Success!"
+// Handle Login
 const onLoginSuccess = (userData) => {
   currentUser.value = userData
   isLoggedIn.value = true
 }
 
-// Logout function
+// Handle Logout
 const logout = () => {
   isLoggedIn.value = false
   currentUser.value = null
@@ -45,34 +45,36 @@ const logout = () => {
       <header class="hero">
         <div class="hero-content">
           <h1>Master Your Future</h1>
-          <p>The premium platform for modern learning and course management.</p>
+          <p>The premium platform for modern learning.</p>
         </div>
       </header>
 
       <main class="main-content">
+        
         <section class="card">
           <div class="card-header">
             <h2>📚 Course Management</h2>
-            <p class="card-subtitle">Add, edit, or remove courses from the catalog.</p>
+            <p class="card-subtitle">Browse the catalog of available courses.</p>
           </div>
           <div class="card-body">
-            <CourseList />
+            <CourseList :currentUser="currentUser" />
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" v-if="currentUser.role === 'teacher'">
           <div class="card-header">
             <h2>👥 Student Directory</h2>
-            <p class="card-subtitle">View registered users and system administrators.</p>
+            <p class="card-subtitle">Administrator Access Only: View registered users.</p>
           </div>
           <div class="card-body">
             <UserList />
           </div>
         </section>
+
       </main>
 
       <footer class="footer">
-        <p>&copy; 2025 Osod Education Inc. All rights reserved.</p>
+        <p>&copy; 2026 Osod Education Inc. All rights reserved.</p>
       </footer>
     </div>
 
@@ -91,7 +93,7 @@ body { margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; back
 .highlight { color: var(--accent); }
 .nav-links { display: flex; gap: 20px; align-items: center; }
 .welcome-msg { font-weight: 600; color: var(--text-dark); margin-right: 10px;}
-.login-btn { background-color: var(--primary); color: white !important; padding: 8px 20px; border-radius: 6px; font-size: 0.9rem; text-decoration: none; }
+.login-btn { background-color: var(--primary); color: white !important; padding: 8px 20px; border-radius: 6px; font-size: 0.9rem; text-decoration: none; cursor: pointer; }
 
 /* HERO */
 .hero { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: white; padding: 4rem 2rem; text-align: center; margin-bottom: -40px; padding-bottom: 80px; }
