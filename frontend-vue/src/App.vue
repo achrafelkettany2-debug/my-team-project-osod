@@ -3,11 +3,12 @@ import { ref } from 'vue'
 import UserList from './components/UserList.vue'
 import CourseList from './components/CourseList.vue'
 import Login from './components/Login.vue'
-import MySchedule from './components/MySchedule.vue' // NEW
+import MySchedule from './components/MySchedule.vue'
+import AnnouncementList from './components/AnnouncementList.vue' // NEW
 
 const isLoggedIn = ref(false)
 const currentUser = ref(null)
-const scheduleRef = ref(null) // Reference to refresh the schedule
+const scheduleRef = ref(null)
 
 const onLoginSuccess = (userData) => {
   currentUser.value = userData
@@ -19,7 +20,6 @@ const logout = () => {
   currentUser.value = null
 }
 
-// When a student joins a class, refresh their schedule
 const refreshSchedule = () => {
   if (scheduleRef.value) {
     scheduleRef.value.fetchMyCourses()
@@ -57,6 +57,16 @@ const refreshSchedule = () => {
 
       <main class="main-content">
         
+        <section class="card">
+          <div class="card-header">
+            <h2>📢 Campus News</h2>
+            <p class="card-subtitle">Latest updates from your professors.</p>
+          </div>
+          <div class="card-body">
+            <AnnouncementList :currentUser="currentUser" />
+          </div>
+        </section>
+
         <section class="card" v-if="currentUser.role === 'student'">
           <div class="card-header">
             <h2>📅 My Class Schedule</h2>
@@ -98,7 +108,7 @@ const refreshSchedule = () => {
 </template>
 
 <style>
-/* Use the same styles as before */
+/* Same global styles - keeps everything consistent */
 :root { --primary: #0f172a; --accent: #f59e0b; --bg-light: #f3f4f6; --white: #ffffff; --text-dark: #1e293b; --text-light: #64748b; }
 body { margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; background-color: var(--bg-light); color: var(--text-dark); }
 .navbar { background-color: var(--white); box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }

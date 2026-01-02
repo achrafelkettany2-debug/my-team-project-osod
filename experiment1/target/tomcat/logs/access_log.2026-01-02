@@ -8,3 +8,16 @@
 0:0:0:0:0:0:0:1 - - [02/Jan/2026:19:42:50 +0800] "POST /experiment1/users/login HTTP/1.1" 200 74 http-bio-8080-exec-6 7
 0:0:0:0:0:0:0:1 - - [02/Jan/2026:19:42:50 +0800] "GET /experiment1/courses HTTP/1.1" 200 524 http-bio-8080-exec-7 8
 0:0:0:0:0:0:0:1 - - [02/Jan/2026:19:42:50 +0800] "GET /experiment1/users HTTP/1.1" 200 201 http-bio-8080-exec-8 9
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:20:04:34 +0800] "GET /experiment1/courses HTTP/1.1" 200 524 http-bio-8080-exec-1 377
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:20:06:25 +0800] "POST /experiment1/users/login HTTP/1.1" 200 84 http-bio-8080-exec-3 42
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:20:06:25 +0800] "GET /experiment1/courses HTTP/1.1" 200 524 http-bio-8080-exec-5 7
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:20:06:25 +0800] "GET /experiment1/enrollments/student/1 HTTP/1.1" 200 12 http-bio-8080-exec-4 20
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:20:07:02 +0800] "OPTIONS /experiment1/enrollments/join HTTP/1.1" 200 - http-bio-8080-exec-7 4
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:20:07:02 +0800] "POST /experiment1/enrollments/join HTTP/1.1" 200 31 http-bio-8080-exec-8 24
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:20:07:04 +0800] "GET /experiment1/enrollments/student/1 HTTP/1.1" 200 123 http-bio-8080-exec-9 20
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:20:07:09 +0800] "POST /experiment1/enrollments/join HTTP/1.1" 200 31 http-bio-8080-exec-10 15
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:20:07:12 +0800] "GET /experiment1/enrollments/student/1 HTTP/1.1" 200 233 http-bio-8080-exec-10 10
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:20:08:06 +0800] "POST /experiment1/users/login HTTP/1.1" 200 74 http-bio-8080-exec-10 6
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:20:08:06 +0800] "GET /experiment1/courses HTTP/1.1" 200 524 http-bio-8080-exec-10 6
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:20:08:06 +0800] "GET /experiment1/users HTTP/1.1" 200 201 http-bio-8080-exec-5 8
+0:0:0:0:0:0:0:1 - - [02/Jan/2026:20:11:08 +0800] "GET /experiment1/courses HTTP/1.1" 200 524 http-bio-8080-exec-8 15
