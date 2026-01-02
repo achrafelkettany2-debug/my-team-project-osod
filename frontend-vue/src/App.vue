@@ -4,11 +4,17 @@ import UserList from './components/UserList.vue'
 import CourseList from './components/CourseList.vue'
 import Login from './components/Login.vue'
 import MySchedule from './components/MySchedule.vue'
-import AnnouncementList from './components/AnnouncementList.vue' // NEW
+import AnnouncementList from './components/AnnouncementList.vue'
+// NEW: Import the Assignment Popup
+import AssignmentManager from './components/AssignmentManager.vue' 
 
 const isLoggedIn = ref(false)
 const currentUser = ref(null)
 const scheduleRef = ref(null)
+
+// Variables for the Homework Popup
+const showAssignmentModal = ref(false)
+const selectedCourse = ref(null)
 
 const onLoginSuccess = (userData) => {
   currentUser.value = userData
@@ -25,11 +31,30 @@ const refreshSchedule = () => {
     scheduleRef.value.fetchMyCourses()
   }
 }
+
+// THE MISSING PIECE: This function opens the popup
+const openHomework = (courseOrEnrollment) => {
+  // We need to handle data from both CourseList and MySchedule
+  const courseData = {
+    id: courseOrEnrollment.courseId || courseOrEnrollment.id,
+    courseName: courseOrEnrollment.courseName
+  }
+  
+  selectedCourse.value = courseData
+  showAssignmentModal.value = true
+}
 </script>
 
 <template>
   <div class="app-layout">
     
+    <AssignmentManager 
+      v-if="showAssignmentModal" 
+      :course="selectedCourse" 
+      :currentUser="currentUser"
+      @close="showAssignmentModal = false" 
+    />
+
     <div v-if="!isLoggedIn">
       <Login @login-success="onLoginSuccess" />
     </div>
@@ -73,7 +98,11 @@ const refreshSchedule = () => {
             <p class="card-subtitle">Your active enrollments.</p>
           </div>
           <div class="card-body">
-            <MySchedule :currentUser="currentUser" ref="scheduleRef" />
+            <MySchedule 
+              :currentUser="currentUser" 
+              ref="scheduleRef" 
+              @open-homework="openHomework" 
+            />
           </div>
         </section>
 
@@ -83,7 +112,11 @@ const refreshSchedule = () => {
             <p class="card-subtitle">Browse the catalog of available courses.</p>
           </div>
           <div class="card-body">
-            <CourseList :currentUser="currentUser" @course-joined="refreshSchedule" />
+            <CourseList 
+              :currentUser="currentUser" 
+              @course-joined="refreshSchedule"
+              @open-homework="openHomework"
+            />
           </div>
         </section>
 
@@ -108,7 +141,7 @@ const refreshSchedule = () => {
 </template>
 
 <style>
-/* Same global styles - keeps everything consistent */
+/* GLOBAL STYLES */
 :root { --primary: #0f172a; --accent: #f59e0b; --bg-light: #f3f4f6; --white: #ffffff; --text-dark: #1e293b; --text-light: #64748b; }
 body { margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; background-color: var(--bg-light); color: var(--text-dark); }
 .navbar { background-color: var(--white); box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }

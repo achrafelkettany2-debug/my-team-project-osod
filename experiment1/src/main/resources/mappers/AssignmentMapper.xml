@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.myexperiment.mapper.AssignmentMapper">
+    
+    <select id="findByCourseId" resultType="com.myexperiment.entity.Assignment">
+        SELECT 
+            id, 
+            course_id as courseId, 
+            title, 
+            description, 
+            due_date as dueDate, 
+            created_at as createdAt
+        FROM assignments 
+        WHERE course_id = #{courseId}
+        ORDER BY due_date ASC
+    </select>
+
+    <insert id="createAssignment" parameterType="com.myexperiment.entity.Assignment">
+        INSERT INTO assignments (course_id, title, description, due_date)
+        VALUES (#{courseId}, #{title}, #{description}, #{dueDate})
+    </insert>
+
+    <delete id="deleteAssignment">
+        DELETE FROM assignments WHERE id = #{id}
+    </delete>
+
+</mapper>

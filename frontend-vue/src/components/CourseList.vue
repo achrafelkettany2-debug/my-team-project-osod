@@ -4,7 +4,8 @@ import axios from 'axios'
 
 // Accept user info from App.vue
 const props = defineProps(['currentUser'])
-const emit = defineEmits(['course-joined']) // NEW: Tell App.vue when we join a class
+// We emit 'open-homework' so App.vue knows to show the popup
+const emit = defineEmits(['course-joined', 'open-homework']) 
 
 const courses = ref([])
 const error = ref('')
@@ -46,10 +47,9 @@ const deleteCourse = async (id) => {
   }
 }
 
-// NEW: STUDENT ONLY: Join Course
+// STUDENT ONLY: Join Course
 const joinCourse = async (courseId) => {
   try {
-    // We send: { userId: 1, courseId: 5 }
     const response = await axios.post('http://localhost:8080/experiment1/enrollments/join', {
       userId: props.currentUser.id,
       courseId: courseId
@@ -57,7 +57,6 @@ const joinCourse = async (courseId) => {
 
     if (response.data.status === 'success') {
       alert("Success! You have joined the class.")
-      // Tell the parent component to refresh the schedule
       emit('course-joined') 
     } else if (response.data.status === 'already_enrolled') {
       alert("You are already in this class!")
@@ -86,7 +85,7 @@ onMounted(() => {
         <input v-model="newCourse.courseName" placeholder="Course Name" />
         <input v-model="newCourse.teacherName" placeholder="Teacher Name" />
         <input v-model="newCourse.description" placeholder="Description" />
-        <button @click="addCourse">Add Course</button>
+        <button class="add-btn" @click="addCourse">Add Course</button>
       </div>
     </div>
     
@@ -110,7 +109,10 @@ onMounted(() => {
           <td>{{ course.description }}</td>
           
           <td>
-            <button v-if="currentUser.role === 'teacher'" class="delete-btn" @click="deleteCourse(course.id)">Delete</button>
+            <div v-if="currentUser.role === 'teacher'">
+              <button class="hw-btn" @click="$emit('open-homework', course)">Manage HW</button>
+              <button class="delete-btn" @click="deleteCourse(course.id)">Delete</button>
+            </div>
             
             <button v-if="currentUser.role === 'student'" class="join-btn" @click="joinCourse(course.id)">Join Class</button>
           </td>
@@ -123,7 +125,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* Reuse existing styles */
 .container { max-width: 100%; padding: 20px; }
 .header-row { display: flex; justify-content: flex-end; margin-bottom: 10px; }
 .role-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; color: white; }
@@ -133,16 +134,18 @@ onMounted(() => {
 .add-form { background: #f8fafc; padding: 20px; margin-bottom: 25px; border-radius: 8px; border: 1px dashed #cbd5e1; }
 .input-group { display: flex; gap: 10px; flex-wrap: wrap; }
 input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; flex: 1; }
-button { padding: 10px 20px; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;}
+button { padding: 8px 16px; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; }
 
-/* Teacher Button */
+/* Button Colors */
 .add-btn { background-color: #0f172a; }
-.delete-btn { background-color: #ef4444; padding: 6px 12px; font-size: 0.9rem; }
+.delete-btn { background-color: #ef4444; font-size: 0.9rem; }
 .delete-btn:hover { background-color: #dc2626; }
-
-/* Student Button */
-.join-btn { background-color: #10b981; padding: 6px 12px; font-size: 0.9rem; } /* Green */
+.join-btn { background-color: #10b981; font-size: 0.9rem; }
 .join-btn:hover { background-color: #059669; }
+
+/* New HW Button Style */
+.hw-btn { background-color: #8b5cf6; margin-right: 5px; font-size: 0.9rem; } 
+.hw-btn:hover { background-color: #7c3aed; }
 
 table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
