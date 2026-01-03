@@ -72,24 +72,18 @@ onMounted(() => {
 
 <template>
   <div class="container">
-    <div class="header-row">
-      <span v-if="currentUser" class="role-badge" :class="currentUser.role">
-        Mode: {{ currentUser.role.toUpperCase() }}
-      </span>
-    </div>
-
-    <div v-if="currentUser && (currentUser.role === 'teacher' || currentUser.role === 'admin')" class="add-form">
-      <h3>Add New Course</h3>
-      <div class="input-group">
+    
+    <div v-if="currentUser && (currentUser.role === 'teacher' || currentUser.role === 'admin')" class="add-panel">
+      <div class="input-row">
         <input v-model="newCourse.courseName" placeholder="Course Name" />
         <input v-model="newCourse.teacherName" placeholder="Teacher Name" />
-        <input v-model="newCourse.description" placeholder="Description" />
-        <button class="add-btn" @click="addCourse">Add Course</button>
+        <input v-model="newCourse.description" placeholder="Short Description" />
+        <button class="create-btn" @click="addCourse">Create Course</button>
       </div>
     </div>
     
-    <div class="search-bar">
-      <input v-model="searchQuery" placeholder="🔍 Search courses or teachers..." />
+    <div class="search-wrapper">
+      <input v-model="searchQuery" placeholder="🔍 Find a course..." class="search-input" />
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
@@ -97,65 +91,92 @@ onMounted(() => {
     <table v-if="courses.length > 0">
       <thead>
         <tr>
-          <th>ID</th>
+          <th style="width: 50px">ID</th>
           <th>Course Name</th>
-          <th>Teacher</th>
-          <th>Description</th>
-          <th style="width: 160px;">Actions</th> 
+          <th>Instructor</th>
+          <th>About</th>
+          <th style="text-align: right; padding-right: 30px;">Actions</th> 
         </tr>
       </thead>
       <tbody>
         <tr v-for="course in filteredCourses" :key="course.id">
-          <td>{{ course.id }}</td>
+          <td class="id-col">#{{ course.id }}</td>
           <td><strong>{{ course.courseName }}</strong></td>
-          <td>{{ course.teacherName }}</td>
-          <td>{{ course.description }}</td>
+          <td><span class="teacher-tag">{{ course.teacherName }}</span></td>
+          <td class="desc">{{ course.description }}</td>
           
-          <td>
-            <div v-if="currentUser.role === 'teacher' || currentUser.role === 'admin'" class="button-grid">
-              <button class="hw-btn" @click="$emit('open-homework', course)" title="Homework">📝 HW</button>
-              <button class="video-btn" @click="$emit('open-videos', course)" title="Videos">📺 Vid</button>
-              <button class="chat-btn" @click="$emit('open-discussion', course)" title="Discussion">💬 Chat</button>
-              <button class="delete-btn" @click="deleteCourse(course.id)" title="Delete">🗑️ Del</button>
+          <td class="actions-cell">
+            
+            <div v-if="currentUser.role === 'teacher' || currentUser.role === 'admin'" class="action-bar">
+              
+              <button class="icon-btn hw" @click="$emit('open-homework', course)" title="Assignments">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4"/></svg>
+              </button>
+
+              <button class="icon-btn vid" @click="$emit('open-videos', course)" title="Videos">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              </button>
+
+              <button class="icon-btn chat" @click="$emit('open-discussion', course)" title="Chat Room">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              </button>
+
+              <button class="icon-btn del" @click="deleteCourse(course.id)" title="Delete Course">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
             </div>
             
-            <button v-if="currentUser.role === 'student'" class="join-btn" @click="joinCourse(course.id)">Join Class</button>
+            <button v-if="currentUser.role === 'student'" class="join-btn-pill" @click="joinCourse(course.id)">
+              Join Class
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <p v-else-if="!error">Loading courses...</p>
+    <div v-else-if="!error" class="empty-state">No courses found.</div>
   </div>
 </template>
 
 <style scoped>
-.container { max-width: 100%; padding: 20px; }
-.header-row { display: flex; justify-content: flex-end; margin-bottom: 10px; }
-.role-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; color: white; }
-.role-badge.teacher { background-color: #f59e0b; } 
-.role-badge.student { background-color: #3b82f6; } 
-.role-badge.admin { background-color: #7c3aed; } 
+.container { padding: 20px 30px; }
 
-.add-form { background: #f8fafc; padding: 20px; margin-bottom: 25px; border-radius: 8px; border: 1px dashed #cbd5e1; }
-.input-group { display: flex; gap: 10px; flex-wrap: wrap; }
-input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; flex: 1; }
-.add-btn { background-color: #0f172a; color: white; border: none; padding: 0 20px; border-radius: 6px; cursor: pointer; }
+/* Form Styles */
+.add-panel { background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px dashed #cbd5e1; }
+.input-row { display: flex; gap: 10px; }
+input { padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 8px; flex: 1; outline: none; transition: border 0.2s; }
+input:focus { border-color: #3b82f6; }
+.create-btn { background: #0f172a; color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; }
 
-.search-bar { margin-bottom: 15px; }
-.search-bar input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; }
+/* Search */
+.search-wrapper { margin-bottom: 10px; }
+.search-input { width: 100%; background: #f1f5f9; border: none; }
 
-.button-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+/* Table Styles */
+.id-col { color: #94a3b8; font-size: 0.85rem; }
+.teacher-tag { background: #eff6ff; color: #3b82f6; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+.desc { color: #64748b; font-size: 0.9rem; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-button { padding: 6px; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.8rem; }
-.join-btn { background-color: #10b981; width: 100%; padding: 10px;}
-.hw-btn { background-color: #8b5cf6; }
-.video-btn { background-color: #e11d48; } 
-.chat-btn { background-color: #0ea5e9; } 
-.delete-btn { background-color: #ef4444; }
+/* ACTION BAR (The New Buttons) */
+.actions-cell { text-align: right; }
+.action-bar { display: inline-flex; gap: 8px; background: #f8fafc; padding: 4px; border-radius: 8px; border: 1px solid #f1f5f9; }
 
-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
-th { background-color: #f1f5f9; color: #475569; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; }
-.error { color: #ef4444; font-weight: bold; }
+.icon-btn { 
+  background: transparent; border: none; padding: 6px; border-radius: 6px; 
+  display: flex; align-items: center; justify-content: center; color: #64748b; 
+}
+.icon-btn:hover { transform: translateY(-1px); }
+
+/* Individual Icon Colors on Hover */
+.icon-btn.hw:hover { background: #f3e8ff; color: #9333ea; } /* Purple */
+.icon-btn.vid:hover { background: #ffe4e6; color: #e11d48; } /* Rose */
+.icon-btn.chat:hover { background: #dbeafe; color: #2563eb; } /* Blue */
+.icon-btn.del:hover { background: #fee2e2; color: #ef4444; } /* Red */
+
+/* Student Join Button */
+.join-btn-pill { background: #10b981; color: white; border: none; padding: 8px 20px; border-radius: 50px; font-weight: bold; font-size: 0.85rem; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3); }
+.join-btn-pill:hover { background: #059669; transform: translateY(-1px); }
+
+.empty-state { text-align: center; color: #94a3b8; margin-top: 30px; font-style: italic; }
+.error { color: #ef4444; }
 </style>

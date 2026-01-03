@@ -65,7 +65,7 @@ const handleSubmit = async () => {
   <div class="login-container">
     <div class="login-box">
       <div class="icon">🦁</div>
-      <h2>{{ isLoginMode ? 'Student Login' : 'Create Account' }}</h2>
+      <h2>{{ isLoginMode ? 'Welcome Back' : 'Create Account' }}</h2>
       <p class="subtitle">
         {{ isLoginMode ? 'Enter your credentials to access the portal.' : 'Join the Osod Education platform.' }}
       </p>

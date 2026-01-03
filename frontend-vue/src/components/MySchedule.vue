@@ -3,7 +3,6 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
 const props = defineProps(['currentUser'])
-// Added 'open-discussion' to emits
 const emit = defineEmits(['open-homework', 'open-videos', 'open-discussion'])
 
 const myCourses = ref([])
@@ -28,23 +27,32 @@ onMounted(() => {
 <template>
   <div class="schedule-container">
     <div v-if="myCourses.length === 0" class="empty-state">
-      <p>You haven't joined any classes yet.</p>
+      <p>No active classes.</p>
     </div>
 
     <table v-else>
-      <thead>
-        <tr>
-          <th>Course Name</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
       <tbody>
         <tr v-for="item in myCourses" :key="item.id">
-          <td class="course-name">{{ item.courseName }}</td>
-          <td>
-            <button class="hw-btn" @click="$emit('open-homework', item)">View HW</button>
-            <button class="video-btn" @click="$emit('open-videos', item)">Watch</button>
-            <button class="chat-btn" @click="$emit('open-discussion', item)">Discuss</button>
+          <td class="course-name-cell">
+            <div class="course-name">{{ item.courseName }}</div>
+          </td>
+          
+          <td class="actions-cell">
+            <div class="action-bar-mini">
+              
+              <button class="icon-btn-mini hw" @click="$emit('open-homework', item)" title="Assignments">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4"/></svg>
+              </button>
+
+              <button class="icon-btn-mini vid" @click="$emit('open-videos', item)" title="Videos">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              </button>
+
+              <button class="icon-btn-mini chat" @click="$emit('open-discussion', item)" title="Chat">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              </button>
+
+            </div>
           </td>
         </tr>
       </tbody>
@@ -53,17 +61,28 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.schedule-container { padding: 10px; }
-.empty-state { text-align: center; color: #64748b; padding: 20px; font-style: italic; }
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-th { color: #64748b; font-size: 0.85rem; }
-.course-name { font-weight: 600; color: #0f172a; }
+.schedule-container { padding: 0; }
+.empty-state { text-align: center; color: #94a3b8; padding: 20px; font-style: italic; font-size: 0.9rem; }
 
-button { border: none; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; margin-right: 5px; color: white;}
-.hw-btn { background-color: #8b5cf6; }
-.video-btn { background-color: #e11d48; }
-/* NEW Chat Button */
-.chat-btn { background-color: #0ea5e9; } 
-.chat-btn:hover { background-color: #0284c7; }
+table { width: 100%; border-collapse: collapse; }
+tbody tr { border-bottom: 1px solid #f1f5f9; }
+tbody tr:last-child { border-bottom: none; }
+td { padding: 12px 15px; vertical-align: middle; }
+
+.course-name { font-weight: 600; color: #334155; font-size: 0.9rem; }
+
+.actions-cell { text-align: right; width: 100px; }
+.action-bar-mini { display: flex; gap: 6px; justify-content: flex-end; }
+
+.icon-btn-mini { 
+  background: #f1f5f9; border: none; padding: 6px; border-radius: 6px; 
+  display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer;
+  transition: all 0.2s;
+}
+.icon-btn-mini:hover { transform: translateY(-1px); }
+
+/* Color Grading on Hover */
+.icon-btn-mini.hw:hover { background: #f3e8ff; color: #9333ea; }
+.icon-btn-mini.vid:hover { background: #ffe4e6; color: #e11d48; }
+.icon-btn-mini.chat:hover { background: #dbeafe; color: #2563eb; }
 </style>
