@@ -4,89 +4,97 @@ import axios from 'axios'
 
 const emit = defineEmits(['login-success'])
 
-const isRegistering = ref(false)
-const formData = ref({
-  username: '',
-  password: '',
-  email: '',
-  role: 'student' // Default role
-})
+// Toggle between Login (true) and Register (false)
+const isLoginMode = ref(true)
+
+const username = ref('')
+const password = ref('')
+const email = ref('') // Needed for registration
 const error = ref('')
 
-// Function to handle Login
-const handleLogin = async () => {
-  try {
-    const response = await axios.post('http://localhost:8080/experiment1/users/login', {
-      username: formData.value.username,
-      password: formData.value.password
-    })
-
-    if (response.data.status === 'success') {
-      // Tell the main app we are in!
-      emit('login-success', response.data)
-    } else {
-      error.value = "Invalid username or password"
-    }
-  } catch (err) {
-    error.value = "Login failed: " + err.message
+const handleSubmit = async () => {
+  if(!username.value || !password.value) {
+    error.value = "Please fill in all fields"
+    return
   }
-}
 
-// Function to handle Register
-const handleRegister = async () => {
   try {
-    await axios.post('http://localhost:8080/experiment1/users/register', formData.value)
-    alert("Registration successful! Please log in.")
-    isRegistering.value = false // Switch back to login mode
-    error.value = ''
+    if (isLoginMode.value) {
+      // === LOGIN LOGIC ===
+      const response = await axios.post('http://localhost:8080/experiment1/users/login', {
+        username: username.value,
+        password: password.value
+      })
+
+      if (response.data.status === 'success') {
+        emit('login-success', response.data.user)
+      } else {
+        error.value = "Invalid username or password"
+      }
+
+    } else {
+      // === REGISTER LOGIC ===
+      if (!email.value) {
+        error.value = "Email is required for registration"
+        return
+      }
+      const response = await axios.post('http://localhost:8080/experiment1/users/register', {
+        username: username.value,
+        password: password.value,
+        email: email.value,
+        role: 'student' // Self-registered users are always students first
+      })
+
+      if (response.data.status === 'success') {
+        alert("Registration successful! Please log in.")
+        isLoginMode.value = true // Switch back to login
+        error.value = ''
+      } else {
+        error.value = "Username already exists."
+      }
+    }
+
   } catch (err) {
-    error.value = "Registration failed: " + err.message
+    console.error(err)
+    error.value = "Network Error: Is Tomcat running?"
   }
 }
 </script>
 
 <template>
   <div class="login-container">
-    <div class="login-card">
-      <div class="brand-header">
-        <span class="logo">🦁</span>
-        <h2>{{ isRegistering ? 'Join OSOD' : 'Welcome Back' }}</h2>
-        <p>Sign in to access the Education Platform</p>
-      </div>
-
+    <div class="login-box">
+      <div class="icon">🦁</div>
+      <h2>{{ isLoginMode ? 'Student Login' : 'Create Account' }}</h2>
+      <p class="subtitle">
+        {{ isLoginMode ? 'Enter your credentials to access the portal.' : 'Join the Osod Education platform.' }}
+      </p>
+      
       <div class="form-group">
         <label>Username</label>
-        <input v-model="formData.username" placeholder="Enter username" />
+        <input v-model="username" type="text" placeholder="Enter username" />
+      </div>
+
+      <div class="form-group" v-if="!isLoginMode">
+        <label>Email</label>
+        <input v-model="email" type="email" placeholder="student@university.edu" />
       </div>
 
       <div class="form-group">
         <label>Password</label>
-        <input type="password" v-model="formData.password" placeholder="Enter password" />
-      </div>
-
-      <div v-if="isRegistering">
-        <div class="form-group">
-          <label>Email</label>
-          <input v-model="formData.email" placeholder="Enter email" />
-        </div>
-        <div class="form-group">
-          <label>I am a:</label>
-          <select v-model="formData.role">
-            <option value="student">Student</option>
-            <option value="teacher">Teacher</option>
-          </select>
-        </div>
+        <input v-model="password" type="password" placeholder="••••••••" @keyup.enter="handleSubmit" />
       </div>
 
       <p v-if="error" class="error-msg">{{ error }}</p>
 
-      <button v-if="!isRegistering" @click="handleLogin" class="btn-primary">Log In</button>
-      <button v-else @click="handleRegister" class="btn-primary">Create Account</button>
-
-      <p class="toggle-text">
-        {{ isRegistering ? 'Already have an account?' : 'New to Osod Education?' }}
-        <span @click="isRegistering = !isRegistering" class="link">
-          {{ isRegistering ? 'Log in here' : 'Create account' }}
+      <button @click="handleSubmit">{{ isLoginMode ? 'Sign In' : 'Register' }}</button>
+      
+      <p class="footer-text">
+        <span v-if="isLoginMode">
+          Don't have an account? <a href="#" @click.prevent="isLoginMode = false">Register here</a>.
+        </span>
+        <span v-else>
+          Already have an account? <a href="#" @click.prevent="isLoginMode = true">Log in here</a>.
         </span>
       </p>
     </div>
@@ -94,32 +102,19 @@ const handleRegister = async () => {
 </template>
 
 <style scoped>
-.login-container {
-  display: flex; justify-content: center; align-items: center;
-  min-height: 100vh; background: #f1f5f9;
-}
-.login-card {
-  background: white; padding: 40px; border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 100%; max-width: 400px;
-}
-.brand-header { text-align: center; margin-bottom: 30px; }
-.logo { font-size: 3rem; display: block; margin-bottom: 10px; }
-h2 { color: #0f172a; margin: 0; }
-p { color: #64748b; margin-top: 5px; }
-
-.form-group { margin-bottom: 20px; text-align: left; }
-label { display: block; margin-bottom: 8px; font-weight: 500; color: #334155; }
-input, select {
-  width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;
-  font-size: 1rem; box-sizing: border-box; /* Fixes width issues */
-}
-.btn-primary {
-  width: 100%; padding: 12px; background: #0f172a; color: white;
-  border: none; border-radius: 6px; font-size: 1rem; cursor: pointer;
-}
-.btn-primary:hover { background: #1e293b; }
-.error-msg { color: #ef4444; text-align: center; margin-bottom: 15px; }
-.toggle-text { text-align: center; margin-top: 20px; color: #64748b; }
-.link { color: #f59e0b; cursor: pointer; font-weight: bold; }
-.link:hover { text-decoration: underline; }
+.login-container { display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #334155 100%); }
+.login-box { background: white; padding: 40px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+.icon { font-size: 3rem; margin-bottom: 10px; }
+h2 { color: #0f172a; margin-bottom: 5px; }
+.subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 30px; }
+.form-group { text-align: left; margin-bottom: 15px; }
+label { display: block; margin-bottom: 5px; font-weight: 600; color: #334155; font-size: 0.9rem; }
+input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 1rem; transition: border 0.2s; }
+input:focus { border-color: #3b82f6; outline: none; }
+button { width: 100%; padding: 12px; background-color: #3b82f6; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
+button:hover { background-color: #2563eb; }
+.error-msg { color: #ef4444; font-size: 0.9rem; margin: 10px 0; font-weight: bold; }
+.footer-text { margin-top: 20px; font-size: 0.85rem; color: #94a3b8; }
+a { color: #3b82f6; text-decoration: none; font-weight: bold; }
+a:hover { text-decoration: underline; }
 </style>

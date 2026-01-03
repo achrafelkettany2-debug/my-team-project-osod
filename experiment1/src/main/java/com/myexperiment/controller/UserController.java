@@ -4,10 +4,10 @@ import com.myexperiment.entity.User;
 import com.myexperiment.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import java.util.Collections;
+import java.util.HashMap; // Imported HashMap
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -17,40 +17,43 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Existing: Get all users
-    @GetMapping
-    public List<User> listUsers() {
-        return userService.getAllUsers();
-    }
-
-    // Existing: Add user (Experiment 1 style - keeps old code working)
-    @PostMapping
-    public String addUser(@RequestBody User user) {
-        userService.register(user);
-        return "User added successfully";
-    }
-
-    // NEW: Login API
+    // LOGIN (Fixed to return 'status' AND 'user')
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody User loginUser) {
-        User user = userService.login(loginUser.getUsername(), loginUser.getPassword());
-        
+    public Map<String, Object> login(@RequestBody User loginRequest) {
+        User user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
         if (user != null) {
             Map<String, Object> response = new HashMap<>();
-            response.put("status", "success");
-            response.put("role", user.getRole());
-            response.put("username", user.getUsername());
-            response.put("id", user.getId());
+            response.put("status", "success"); // Login.vue needs this!
+            response.put("user", user);
             return response;
         } else {
-            return Collections.singletonMap("status", "fail");
+            return Collections.singletonMap("status", "error");
         }
     }
 
-    // NEW: Register API (The modern JSON version)
+    // REGISTER
     @PostMapping("/register")
     public Map<String, String> register(@RequestBody User user) {
-        userService.register(user);
+        if (user.getRole() == null) user.setRole("student");
+        
+        boolean success = userService.register(user);
+        if (success) {
+            return Collections.singletonMap("status", "success");
+        } else {
+            return Collections.singletonMap("status", "error");
+        }
+    }
+
+    // LIST ALL USERS
+    @GetMapping
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
+    // DELETE USER
+    @DeleteMapping("/{id}")
+    public Map<String, String> deleteUser(@PathVariable Integer id) {
+        userService.removeUser(id);
         return Collections.singletonMap("status", "success");
     }
 }

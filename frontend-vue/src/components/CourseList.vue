@@ -8,11 +8,8 @@ const emit = defineEmits(['course-joined', 'open-homework', 'open-videos', 'open
 const courses = ref([])
 const error = ref('')
 const newCourse = ref({ courseName: '', teacherName: '', description: '' })
-
-// NEW: Search Query
 const searchQuery = ref('')
 
-// Computed property to filter courses
 const filteredCourses = computed(() => {
   if (!searchQuery.value) return courses.value
   const lowerQuery = searchQuery.value.toLowerCase()
@@ -81,7 +78,7 @@ onMounted(() => {
       </span>
     </div>
 
-    <div v-if="currentUser && currentUser.role === 'teacher'" class="add-form">
+    <div v-if="currentUser && (currentUser.role === 'teacher' || currentUser.role === 'admin')" class="add-form">
       <h3>Add New Course</h3>
       <div class="input-group">
         <input v-model="newCourse.courseName" placeholder="Course Name" />
@@ -104,7 +101,8 @@ onMounted(() => {
           <th>Course Name</th>
           <th>Teacher</th>
           <th>Description</th>
-          <th style="width: 160px;">Actions</th> </tr>
+          <th style="width: 160px;">Actions</th> 
+        </tr>
       </thead>
       <tbody>
         <tr v-for="course in filteredCourses" :key="course.id">
@@ -114,7 +112,7 @@ onMounted(() => {
           <td>{{ course.description }}</td>
           
           <td>
-            <div v-if="currentUser.role === 'teacher'" class="button-grid">
+            <div v-if="currentUser.role === 'teacher' || currentUser.role === 'admin'" class="button-grid">
               <button class="hw-btn" @click="$emit('open-homework', course)" title="Homework">📝 HW</button>
               <button class="video-btn" @click="$emit('open-videos', course)" title="Videos">📺 Vid</button>
               <button class="chat-btn" @click="$emit('open-discussion', course)" title="Discussion">💬 Chat</button>
@@ -137,25 +135,19 @@ onMounted(() => {
 .role-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; color: white; }
 .role-badge.teacher { background-color: #f59e0b; } 
 .role-badge.student { background-color: #3b82f6; } 
+.role-badge.admin { background-color: #7c3aed; } 
 
 .add-form { background: #f8fafc; padding: 20px; margin-bottom: 25px; border-radius: 8px; border: 1px dashed #cbd5e1; }
 .input-group { display: flex; gap: 10px; flex-wrap: wrap; }
 input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; flex: 1; }
 .add-btn { background-color: #0f172a; color: white; border: none; padding: 0 20px; border-radius: 6px; cursor: pointer; }
 
-/* Search Bar Style */
 .search-bar { margin-bottom: 15px; }
 .search-bar input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; }
 
-/* The Grid Layout for Buttons */
-.button-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 2 columns */
-  gap: 5px;
-}
+.button-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
 
 button { padding: 6px; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.8rem; }
-
 .join-btn { background-color: #10b981; width: 100%; padding: 10px;}
 .hw-btn { background-color: #8b5cf6; }
 .video-btn { background-color: #e11d48; } 

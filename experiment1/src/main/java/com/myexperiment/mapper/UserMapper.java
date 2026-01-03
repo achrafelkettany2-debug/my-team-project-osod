@@ -1,20 +1,33 @@
 package com.myexperiment.mapper;
 
 import com.myexperiment.entity.User;
-import org.springframework.stereotype.Repository;
+import org.apache.ibatis.annotations.Select; 
 import java.util.List;
 
-@Repository
 public interface UserMapper {
-    // Original method to get list
-    List<User> findAll();
+    // === AUTHENTICATION & MANAGEMENT ===
+    // Used for Login (We find user, then check password in Service)
+    User findByUsername(String username);
+    
+    // Used for Register
+    void createUser(User user);
+    
+    // Used for User List
+    List<User> findAllUsers();
+    
+    // Used for Admin Deletion
+    void deleteUser(Integer id);
 
-    // Original insert method (we keep this to not break old code)
-    void insertUser(User user);
+    // === NEW: DIRECTOR STATS ===
+    @Select("SELECT COUNT(*) FROM users WHERE role = 'student'")
+    int countStudents();
 
-    // NEW: Login method
-    User login(String username, String password);
+    @Select("SELECT COUNT(*) FROM users WHERE role = 'teacher'")
+    int countTeachers();
 
-    // NEW: Register method
-    void register(User user);
+    @Select("SELECT COUNT(*) FROM courses")
+    int countCourses();
+    
+    @Select("SELECT COUNT(*) FROM enrollments")
+    int countEnrollments();
 }
