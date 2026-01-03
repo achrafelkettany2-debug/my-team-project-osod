@@ -2,30 +2,23 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
-// Accept user info from App.vue
 const props = defineProps(['currentUser'])
-// We emit 'open-homework' so App.vue knows to show the popup
-const emit = defineEmits(['course-joined', 'open-homework']) 
+const emit = defineEmits(['course-joined', 'open-homework', 'open-videos']) 
 
 const courses = ref([])
 const error = ref('')
 
-const newCourse = ref({
-  courseName: '',
-  teacherName: '',
-  description: ''
-})
+const newCourse = ref({ courseName: '', teacherName: '', description: '' })
 
 const fetchCourses = async () => {
   try {
     const response = await axios.get('http://localhost:8080/experiment1/courses')
     courses.value = response.data
   } catch (err) {
-    error.value = "Error connecting to backend: " + err.message
+    error.value = "Error: " + err.message
   }
 }
 
-// TEACHER ONLY: Add Course
 const addCourse = async () => {
   try {
     await axios.post('http://localhost:8080/experiment1/courses', newCourse.value)
@@ -36,9 +29,8 @@ const addCourse = async () => {
   }
 }
 
-// TEACHER ONLY: Delete Course
 const deleteCourse = async (id) => {
-  if(!confirm("Are you sure you want to remove this course?")) return;
+  if(!confirm("Are you sure?")) return;
   try {
     await axios.delete(`http://localhost:8080/experiment1/courses/${id}`)
     fetchCourses()
@@ -47,22 +39,20 @@ const deleteCourse = async (id) => {
   }
 }
 
-// STUDENT ONLY: Join Course
 const joinCourse = async (courseId) => {
   try {
     const response = await axios.post('http://localhost:8080/experiment1/enrollments/join', {
       userId: props.currentUser.id,
       courseId: courseId
     })
-
     if (response.data.status === 'success') {
-      alert("Success! You have joined the class.")
+      alert("Success! Class joined.")
       emit('course-joined') 
     } else if (response.data.status === 'already_enrolled') {
-      alert("You are already in this class!")
+      alert("Already in this class!")
     }
   } catch (err) {
-    alert("Error joining course: " + err.message)
+    alert("Error: " + err.message)
   }
 }
 
@@ -111,6 +101,7 @@ onMounted(() => {
           <td>
             <div v-if="currentUser.role === 'teacher'">
               <button class="hw-btn" @click="$emit('open-homework', course)">Manage HW</button>
+              <button class="video-btn" @click="$emit('open-videos', course)">Lessons</button>
               <button class="delete-btn" @click="deleteCourse(course.id)">Delete</button>
             </div>
             
@@ -134,18 +125,17 @@ onMounted(() => {
 .add-form { background: #f8fafc; padding: 20px; margin-bottom: 25px; border-radius: 8px; border: 1px dashed #cbd5e1; }
 .input-group { display: flex; gap: 10px; flex-wrap: wrap; }
 input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; flex: 1; }
-button { padding: 8px 16px; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; }
+button { padding: 6px 12px; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; margin-right: 5px; }
 
-/* Button Colors */
-.add-btn { background-color: #0f172a; }
-.delete-btn { background-color: #ef4444; font-size: 0.9rem; }
+/* Colors */
+.add-btn { background-color: #0f172a; padding: 10px 20px; }
+.delete-btn { background-color: #ef4444; }
 .delete-btn:hover { background-color: #dc2626; }
-.join-btn { background-color: #10b981; font-size: 0.9rem; }
-.join-btn:hover { background-color: #059669; }
-
-/* New HW Button Style */
-.hw-btn { background-color: #8b5cf6; margin-right: 5px; font-size: 0.9rem; } 
-.hw-btn:hover { background-color: #7c3aed; }
+.join-btn { background-color: #10b981; }
+.hw-btn { background-color: #8b5cf6; }
+/* NEW Video Button */
+.video-btn { background-color: #e11d48; } 
+.video-btn:hover { background-color: #be123c; }
 
 table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }

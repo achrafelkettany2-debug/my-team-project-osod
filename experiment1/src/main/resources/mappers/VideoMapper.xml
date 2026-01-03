@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.myexperiment.mapper.VideoMapper">
+    
+    <select id="findByCourseId" resultType="com.myexperiment.entity.Video">
+        SELECT 
+            id, 
+            course_id as courseId, 
+            title, 
+            video_url as videoUrl, 
+            created_at as createdAt 
+        FROM videos 
+        WHERE course_id = #{courseId}
+        ORDER BY created_at ASC
+    </select>
+
+    <insert id="createVideo" parameterType="com.myexperiment.entity.Video">
+        INSERT INTO videos (course_id, title, video_url)
+        VALUES (#{courseId}, #{title}, #{videoUrl})
+    </insert>
+
+    <delete id="deleteVideo">
+        DELETE FROM videos WHERE id = #{id}
+    </delete>
+
+</mapper>

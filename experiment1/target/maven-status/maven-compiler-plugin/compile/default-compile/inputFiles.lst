@@ -1,6 +1,9 @@
 d:\studies\china studies\5th semester\individual experiment\My_Experiment_Work\experiment1\src\main\java\com\myexperiment\entity\Announcement.java
+d:\studies\china studies\5th semester\individual experiment\My_Experiment_Work\experiment1\src\main\java\com\myexperiment\entity\Video.java
+d:\studies\china studies\5th semester\individual experiment\My_Experiment_Work\experiment1\src\main\java\com\myexperiment\service\VideoService.java
 d:\studies\china studies\5th semester\individual experiment\My_Experiment_Work\experiment1\src\main\java\com\myexperiment\mapper\AnnouncementMapper.java
 d:\studies\china studies\5th semester\individual experiment\My_Experiment_Work\experiment1\src\main\java\com\myexperiment\entity\User.java
+d:\studies\china studies\5th semester\individual experiment\My_Experiment_Work\experiment1\src\main\java\com\myexperiment\controller\VideoController.java
 d:\studies\china studies\5th semester\individual experiment\My_Experiment_Work\experiment1\src\main\java\com\myexperiment\entity\Assignment.java
 d:\studies\china studies\5th semester\individual experiment\My_Experiment_Work\experiment1\src\main\java\com\myexperiment\entity\Enrollment.java
 d:\studies\china studies\5th semester\individual experiment\My_Experiment_Work\experiment1\src\main\java\com\myexperiment\service\AnnouncementService.java
@@ -18,3 +21,4 @@ d:\studies\china studies\5th semester\individual experiment\My_Experiment_Work\e
 d:\studies\china studies\5th semester\individual experiment\My_Experiment_Work\experiment1\src\main\java\com\myexperiment\controller\AssignmentController.java
 d:\studies\china studies\5th semester\individual experiment\My_Experiment_Work\experiment1\src\main\java\com\myexperiment\service\CourseService.java
 d:\studies\china studies\5th semester\individual experiment\My_Experiment_Work\experiment1\src\main\java\com\myexperiment\controller\CourseController.java
+d:\studies\china studies\5th semester\individual experiment\My_Experiment_Work\experiment1\src\main\java\com\myexperiment\mapper\VideoMapper.java

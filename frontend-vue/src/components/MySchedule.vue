@@ -3,8 +3,7 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
 const props = defineProps(['currentUser'])
-// We emit 'open-homework' so App.vue knows to show the popup
-const emit = defineEmits(['open-homework'])
+const emit = defineEmits(['open-homework', 'open-videos'])
 
 const myCourses = ref([])
 
@@ -18,7 +17,6 @@ const fetchMyCourses = async () => {
   }
 }
 
-// Allow parent to trigger refresh
 defineExpose({ fetchMyCourses })
 
 onMounted(() => {
@@ -36,7 +34,7 @@ onMounted(() => {
       <thead>
         <tr>
           <th>Course Name</th>
-          <th>Action</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -44,6 +42,7 @@ onMounted(() => {
           <td class="course-name">{{ item.courseName }}</td>
           <td>
             <button class="hw-btn" @click="$emit('open-homework', item)">View HW</button>
+            <button class="video-btn" @click="$emit('open-videos', item)">Watch</button>
           </td>
         </tr>
       </tbody>
@@ -59,7 +58,9 @@ th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
 th { color: #64748b; font-size: 0.85rem; }
 .course-name { font-weight: 600; color: #0f172a; }
 
-/* New HW Button Style */
-.hw-btn { background-color: #8b5cf6; color: white; border: none; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+button { border: none; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; margin-right: 5px; color: white;}
+.hw-btn { background-color: #8b5cf6; }
 .hw-btn:hover { background-color: #7c3aed; }
+.video-btn { background-color: #e11d48; }
+.video-btn:hover { background-color: #be123c; }
 </style>

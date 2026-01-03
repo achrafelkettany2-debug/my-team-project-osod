@@ -5,15 +5,16 @@ import CourseList from './components/CourseList.vue'
 import Login from './components/Login.vue'
 import MySchedule from './components/MySchedule.vue'
 import AnnouncementList from './components/AnnouncementList.vue'
-// NEW: Import the Assignment Popup
-import AssignmentManager from './components/AssignmentManager.vue' 
+import AssignmentManager from './components/AssignmentManager.vue'
+import VideoManager from './components/VideoManager.vue' // NEW IMPORT
 
 const isLoggedIn = ref(false)
 const currentUser = ref(null)
 const scheduleRef = ref(null)
 
-// Variables for the Homework Popup
+// Variables for Popups
 const showAssignmentModal = ref(false)
+const showVideoModal = ref(false) // NEW
 const selectedCourse = ref(null)
 
 const onLoginSuccess = (userData) => {
@@ -32,16 +33,22 @@ const refreshSchedule = () => {
   }
 }
 
-// THE MISSING PIECE: This function opens the popup
+// Logic to Open Homework
 const openHomework = (courseOrEnrollment) => {
-  // We need to handle data from both CourseList and MySchedule
-  const courseData = {
+  selectedCourse.value = {
     id: courseOrEnrollment.courseId || courseOrEnrollment.id,
     courseName: courseOrEnrollment.courseName
   }
-  
-  selectedCourse.value = courseData
   showAssignmentModal.value = true
+}
+
+// NEW: Logic to Open Videos
+const openVideos = (courseOrEnrollment) => {
+  selectedCourse.value = {
+    id: courseOrEnrollment.courseId || courseOrEnrollment.id,
+    courseName: courseOrEnrollment.courseName
+  }
+  showVideoModal.value = true
 }
 </script>
 
@@ -53,6 +60,13 @@ const openHomework = (courseOrEnrollment) => {
       :course="selectedCourse" 
       :currentUser="currentUser"
       @close="showAssignmentModal = false" 
+    />
+
+    <VideoManager 
+      v-if="showVideoModal" 
+      :course="selectedCourse" 
+      :currentUser="currentUser"
+      @close="showVideoModal = false" 
     />
 
     <div v-if="!isLoggedIn">
@@ -102,6 +116,7 @@ const openHomework = (courseOrEnrollment) => {
               :currentUser="currentUser" 
               ref="scheduleRef" 
               @open-homework="openHomework" 
+              @open-videos="openVideos"
             />
           </div>
         </section>
@@ -116,6 +131,7 @@ const openHomework = (courseOrEnrollment) => {
               :currentUser="currentUser" 
               @course-joined="refreshSchedule"
               @open-homework="openHomework"
+              @open-videos="openVideos"
             />
           </div>
         </section>
@@ -141,7 +157,7 @@ const openHomework = (courseOrEnrollment) => {
 </template>
 
 <style>
-/* GLOBAL STYLES */
+/* Global Styles */
 :root { --primary: #0f172a; --accent: #f59e0b; --bg-light: #f3f4f6; --white: #ffffff; --text-dark: #1e293b; --text-light: #64748b; }
 body { margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; background-color: var(--bg-light); color: var(--text-dark); }
 .navbar { background-color: var(--white); box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
