@@ -3,7 +3,8 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
 const props = defineProps(['currentUser'])
-const emit = defineEmits(['open-homework', 'open-videos'])
+// Added 'open-discussion' to emits
+const emit = defineEmits(['open-homework', 'open-videos', 'open-discussion'])
 
 const myCourses = ref([])
 
@@ -43,6 +44,7 @@ onMounted(() => {
           <td>
             <button class="hw-btn" @click="$emit('open-homework', item)">View HW</button>
             <button class="video-btn" @click="$emit('open-videos', item)">Watch</button>
+            <button class="chat-btn" @click="$emit('open-discussion', item)">Discuss</button>
           </td>
         </tr>
       </tbody>
@@ -60,7 +62,8 @@ th { color: #64748b; font-size: 0.85rem; }
 
 button { border: none; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; margin-right: 5px; color: white;}
 .hw-btn { background-color: #8b5cf6; }
-.hw-btn:hover { background-color: #7c3aed; }
 .video-btn { background-color: #e11d48; }
-.video-btn:hover { background-color: #be123c; }
+/* NEW Chat Button */
+.chat-btn { background-color: #0ea5e9; } 
+.chat-btn:hover { background-color: #0284c7; }
 </style>

@@ -1,14 +1,26 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 
 const props = defineProps(['currentUser'])
-const emit = defineEmits(['course-joined', 'open-homework', 'open-videos']) 
+const emit = defineEmits(['course-joined', 'open-homework', 'open-videos', 'open-discussion']) 
 
 const courses = ref([])
 const error = ref('')
-
 const newCourse = ref({ courseName: '', teacherName: '', description: '' })
+
+// NEW: Search Query
+const searchQuery = ref('')
+
+// Computed property to filter courses
+const filteredCourses = computed(() => {
+  if (!searchQuery.value) return courses.value
+  const lowerQuery = searchQuery.value.toLowerCase()
+  return courses.value.filter(c => 
+    c.courseName.toLowerCase().includes(lowerQuery) || 
+    c.teacherName.toLowerCase().includes(lowerQuery)
+  )
+})
 
 const fetchCourses = async () => {
   try {
@@ -79,6 +91,10 @@ onMounted(() => {
       </div>
     </div>
     
+    <div class="search-bar">
+      <input v-model="searchQuery" placeholder="🔍 Search courses or teachers..." />
+    </div>
+
     <p v-if="error" class="error">{{ error }}</p>
 
     <table v-if="courses.length > 0">
@@ -88,21 +104,21 @@ onMounted(() => {
           <th>Course Name</th>
           <th>Teacher</th>
           <th>Description</th>
-          <th>Actions</th>
-        </tr>
+          <th style="width: 160px;">Actions</th> </tr>
       </thead>
       <tbody>
-        <tr v-for="course in courses" :key="course.id">
+        <tr v-for="course in filteredCourses" :key="course.id">
           <td>{{ course.id }}</td>
-          <td>{{ course.courseName }}</td>
+          <td><strong>{{ course.courseName }}</strong></td>
           <td>{{ course.teacherName }}</td>
           <td>{{ course.description }}</td>
           
           <td>
-            <div v-if="currentUser.role === 'teacher'">
-              <button class="hw-btn" @click="$emit('open-homework', course)">Manage HW</button>
-              <button class="video-btn" @click="$emit('open-videos', course)">Lessons</button>
-              <button class="delete-btn" @click="deleteCourse(course.id)">Delete</button>
+            <div v-if="currentUser.role === 'teacher'" class="button-grid">
+              <button class="hw-btn" @click="$emit('open-homework', course)" title="Homework">📝 HW</button>
+              <button class="video-btn" @click="$emit('open-videos', course)" title="Videos">📺 Vid</button>
+              <button class="chat-btn" @click="$emit('open-discussion', course)" title="Discussion">💬 Chat</button>
+              <button class="delete-btn" @click="deleteCourse(course.id)" title="Delete">🗑️ Del</button>
             </div>
             
             <button v-if="currentUser.role === 'student'" class="join-btn" @click="joinCourse(course.id)">Join Class</button>
@@ -125,20 +141,29 @@ onMounted(() => {
 .add-form { background: #f8fafc; padding: 20px; margin-bottom: 25px; border-radius: 8px; border: 1px dashed #cbd5e1; }
 .input-group { display: flex; gap: 10px; flex-wrap: wrap; }
 input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; flex: 1; }
-button { padding: 6px 12px; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; margin-right: 5px; }
+.add-btn { background-color: #0f172a; color: white; border: none; padding: 0 20px; border-radius: 6px; cursor: pointer; }
 
-/* Colors */
-.add-btn { background-color: #0f172a; padding: 10px 20px; }
-.delete-btn { background-color: #ef4444; }
-.delete-btn:hover { background-color: #dc2626; }
-.join-btn { background-color: #10b981; }
+/* Search Bar Style */
+.search-bar { margin-bottom: 15px; }
+.search-bar input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; }
+
+/* The Grid Layout for Buttons */
+.button-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 columns */
+  gap: 5px;
+}
+
+button { padding: 6px; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.8rem; }
+
+.join-btn { background-color: #10b981; width: 100%; padding: 10px;}
 .hw-btn { background-color: #8b5cf6; }
-/* NEW Video Button */
 .video-btn { background-color: #e11d48; } 
-.video-btn:hover { background-color: #be123c; }
+.chat-btn { background-color: #0ea5e9; } 
+.delete-btn { background-color: #ef4444; }
 
 table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
 th { background-color: #f1f5f9; color: #475569; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; }
 .error { color: #ef4444; font-weight: bold; }
 </style>

@@ -6,7 +6,8 @@ import Login from './components/Login.vue'
 import MySchedule from './components/MySchedule.vue'
 import AnnouncementList from './components/AnnouncementList.vue'
 import AssignmentManager from './components/AssignmentManager.vue'
-import VideoManager from './components/VideoManager.vue' // NEW IMPORT
+import VideoManager from './components/VideoManager.vue' 
+import DiscussionManager from './components/DiscussionManager.vue' // NEW IMPORT
 
 const isLoggedIn = ref(false)
 const currentUser = ref(null)
@@ -14,7 +15,8 @@ const scheduleRef = ref(null)
 
 // Variables for Popups
 const showAssignmentModal = ref(false)
-const showVideoModal = ref(false) // NEW
+const showVideoModal = ref(false)
+const showDiscussionModal = ref(false) // NEW
 const selectedCourse = ref(null)
 
 const onLoginSuccess = (userData) => {
@@ -33,22 +35,28 @@ const refreshSchedule = () => {
   }
 }
 
-// Logic to Open Homework
-const openHomework = (courseOrEnrollment) => {
-  selectedCourse.value = {
+// Logic to Open Windows
+const prepareCourseData = (courseOrEnrollment) => {
+  return {
     id: courseOrEnrollment.courseId || courseOrEnrollment.id,
     courseName: courseOrEnrollment.courseName
   }
+}
+
+const openHomework = (item) => {
+  selectedCourse.value = prepareCourseData(item)
   showAssignmentModal.value = true
 }
 
-// NEW: Logic to Open Videos
-const openVideos = (courseOrEnrollment) => {
-  selectedCourse.value = {
-    id: courseOrEnrollment.courseId || courseOrEnrollment.id,
-    courseName: courseOrEnrollment.courseName
-  }
+const openVideos = (item) => {
+  selectedCourse.value = prepareCourseData(item)
   showVideoModal.value = true
+}
+
+// NEW: Open Chat
+const openDiscussion = (item) => {
+  selectedCourse.value = prepareCourseData(item)
+  showDiscussionModal.value = true
 }
 </script>
 
@@ -67,6 +75,13 @@ const openVideos = (courseOrEnrollment) => {
       :course="selectedCourse" 
       :currentUser="currentUser"
       @close="showVideoModal = false" 
+    />
+
+    <DiscussionManager
+      v-if="showDiscussionModal"
+      :course="selectedCourse"
+      :currentUser="currentUser"
+      @close="showDiscussionModal = false"
     />
 
     <div v-if="!isLoggedIn">
@@ -117,6 +132,7 @@ const openVideos = (courseOrEnrollment) => {
               ref="scheduleRef" 
               @open-homework="openHomework" 
               @open-videos="openVideos"
+              @open-discussion="openDiscussion"
             />
           </div>
         </section>
@@ -132,6 +148,7 @@ const openVideos = (courseOrEnrollment) => {
               @course-joined="refreshSchedule"
               @open-homework="openHomework"
               @open-videos="openVideos"
+              @open-discussion="openDiscussion"
             />
           </div>
         </section>
@@ -157,7 +174,7 @@ const openVideos = (courseOrEnrollment) => {
 </template>
 
 <style>
-/* Global Styles */
+/* Global Styles (unchanged) */
 :root { --primary: #0f172a; --accent: #f59e0b; --bg-light: #f3f4f6; --white: #ffffff; --text-dark: #1e293b; --text-light: #64748b; }
 body { margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; background-color: var(--bg-light); color: var(--text-dark); }
 .navbar { background-color: var(--white); box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
